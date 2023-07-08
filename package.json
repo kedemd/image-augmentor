@@ -1,0 +1,27 @@
+{
+    "name": "image-augmentor",
+    "version": "1.0.0",
+    "description": "A Node.js module to apply random transformations to images.",
+    "main": "augmentor.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/kedemd/image-augmentor.git"
+    },
+    "keywords": [
+        "image",
+        "augmentation",
+        "transformations"
+    ],
+    "author": "Kedem Diamant",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/kedemd/image-augmentor/issues"
+    },
+    "homepage": "https://github.com/kedemd/image-augmentor#readme",
+    "dependencies": {
+        "sharp": "^0.32.1"
+    }
+}
