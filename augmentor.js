@@ -49,10 +49,10 @@ async function applyTransformations(imageBuffer, transformationConfig) {
         saturationRange = 0,
         contrastRange = 0,
         transposeRange = 0,
-        backgroundColor = {r: 255, g: 255, b: 255}
+        backgroundColor = {r: 255, g: 255, b: 255, alpha: 1}
     } = transformationConfig;
 
-    const sharpImage = sharp(imageBuffer).flatten({background: backgroundColor});
+    const sharpImage = sharp(imageBuffer);
     const metadata = await sharpImage.metadata();
     const width = metadata.width;
     const height = metadata.height;
@@ -73,7 +73,6 @@ async function applyTransformations(imageBuffer, transformationConfig) {
         const zoomY = Math.round(height * randomZoomFactor);
         transformedImage = transformedImage.resize(zoomX, zoomY , { background: backgroundColor });
     }
-
     // Apply shear transformation
     if (shearRange) {
         const randomShearX = getRandomInRange(shearRange);
@@ -84,9 +83,8 @@ async function applyTransformations(imageBuffer, transformationConfig) {
     // Apply rotation transformation
     if (rotationRange) {
         const randomRotationAngle = getRandomInRange(rotationRange);
-        transformedImage = transformedImage.rotate(randomRotationAngle, { background: backgroundColor });
+        transformedImage = transformedImage.rotate(randomRotationAngle, { background: backgroundColor,  }).resize(width, height,{ background: backgroundColor, fit: 'cover'});
     }
-
     if (blurRange) {
         const scalingFactor = 10; // Adjust the scaling factor to control the range
         const minBlurSigma = 0.3; // Minimum value for blur sigma
@@ -123,12 +121,46 @@ async function applyTransformations(imageBuffer, transformationConfig) {
         transformedImage = transformedImage.modulate({contrast: 1 + randomContrast});
     }
 
-    const outputImage = sharp(await transformedImage.toBuffer()).resize(width, height, { background: backgroundColor });
+    const outputImage = sharp(await transformedImage.toBuffer()).resize(width, height, { fit: "cover" });
     return outputImage.toBuffer();
 }
 
-module.exports = exports = function createImageAugmentor(config) {
+/**
+ * Creates an image augmentor function with a specific set of transformations defined by the config.
+ *
+ * @param {TransformationConfig} config - Configuration object for transformations.
+ * @returns {Function} A function that takes an image buffer and applies the transformations defined in the config.
+ * This function is asynchronous and returns a Promise that resolves with the transformed image buffer.
+ *
+ * @example
+ *
+ * const config = {
+ *     shearRange: 10,
+ *     rotationRange: 180,
+ *     blurRange: 5,
+ *     zoomRange: 2,
+ *     sharpenRange: 2,
+ *     brightnessRange: 0.5,
+ *     saturationRange: 0.5,
+ *     contrastRange: 0.5,
+ *     transposeRange: 50,
+ *     backgroundColor: {r: 255, g: 255, b: 255}
+ * };
+ *
+ * const augmentImage = createImageAugmentor(config);
+ *
+ * // Then, you can use `augmentImage` with any image buffer.
+ * const fs = require('fs');
+ * const imageBuffer = fs.readFileSync('path/to/your/image.jpg');
+ *
+ * augmentImage(imageBuffer).then((augmentedImageBuffer) => {
+ *     fs.writeFileSync('path/to/save/augmented/image.jpg', augmentedImageBuffer);
+ * });
+ */
+function createImageAugmentor(config) {
     return async function (imageBuffer) {
         return await applyTransformations(imageBuffer, config);
     };
-};
+}
+
+module.exports = exports = createImageAugmentor;
