@@ -7,6 +7,7 @@ Useful data augmentation and data generation for machine learning
 
 Usage
 ```
+const fs = require('fs');
 const createImageAugmentor = require('image-augmentor');
 
 const augmentor = createImageAugmentor({
@@ -17,10 +18,9 @@ const augmentor = createImageAugmentor({
 });
 
 async function augment(){
-const fs = require('fs');
-
     const source = await sharp (fs.readFileSync('./cat.png')).toBuffer();
-    fs.writeFileSync('./augmented-cat.png', await augmentor(source));
+    const augmentedImage = await augmentor(source);
+    fs.writeFileSync('./augmented-cat.png', augmentedImage);
 }
 augment();
 ```
