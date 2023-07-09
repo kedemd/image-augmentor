@@ -169,8 +169,6 @@ async function applyTransformations(imageBuffer, transformationConfig) {
         transformedImage = cropToCenter(transformedImage, wrapperWidth, wrapperHeight);
     }
 
-    await transformedImage.toFile('out.png');
-
     // Apply rotation transformation
     if (rotationRange) {
         const randomRotationAngle = getRandomInRange(rotationRange);
@@ -188,8 +186,6 @@ async function applyTransformations(imageBuffer, transformationConfig) {
         transformedImage = transposeImage(transformedImage, randomTransposeX, randomTransposeY, wrapperWidth, wrapperHeight, backgroundColor);
         transformedImage = cropToCenter(transformedImage, wrapperWidth, wrapperHeight);
     }
-
-    await transformedImage.toFile('out.png');
 
     // Resize the image if needed
     if (zoomRange) {
@@ -220,8 +216,6 @@ async function applyTransformations(imageBuffer, transformationConfig) {
                 });
         }
     }
-
-    await transformedImage.toFile('out.png');
 
     transformedImage = sharp(await transformedImage.toBuffer());
 
@@ -280,4 +274,4 @@ function createImageAugmentor(config) {
     };
 }
 
-module.exports = exports = createImageAugmentor;
+module.exports = createImageAugmentor;
